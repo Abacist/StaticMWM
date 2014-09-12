@@ -12,13 +12,17 @@ public:
 	int _begin;
 	int _end;
 	int _weight;
+	bool operator==(const X& rhs)
+	{
+		return this->_id == rhs._id;
+	}
 };
 
 class Y
 {
 public:
 	int _value;
-	int _weight;
+	//int _weight;
 };
 
 class CBG

@@ -1,6 +1,6 @@
 #include"auxiliary.h"
 
-int verifyBegin(CBG& g)
+int verifyBegin(CBG g)
 {
 	int minYValue = g._allY[0]._value;
 	for (int i = 0; i < g._allY.size(); i++)
@@ -22,7 +22,7 @@ int verifyBegin(CBG& g)
 }
 
 
-void splitCBG(CBG& g, X midX, CBG& gl, CBG& gr)
+void splitCBG(CBG g, X midX, CBG& gl, CBG& gr)
 {
 	for (int i = 0; i < g._allX.size(); i++)
 	{
@@ -48,17 +48,17 @@ void splitCBG(CBG& g, X midX, CBG& gl, CBG& gr)
 	}
 }
 
-bool cmpX(X x1, X x2)
+bool cmpXinESwithEnd(X x1, X x2)
 {
 	if (x1._end < x2._end)
 	{
 		return true;
 	}
-	else if (x1._end == x2._end && x1._begin < x2._begin)
+	/*else if (x1._end == x2._end && x1._begin < x2._begin)
 	{
 		return true;
-	}
-	else if (x1._end == x2._end && x1._begin == x2._begin && x1._id < x2._id)
+	}*/
+	else if (x1._end == x2._end && x1._id < x2._id)
 	{
 		return true;
 	}
@@ -67,3 +67,51 @@ bool cmpX(X x1, X x2)
 		return false;
 	}
 }
+
+bool cmpYInc(Y y1, Y y2)
+{
+	return y1._value < y1._value;
+}
+
+bool cmpXinEEwithBegin(X x1, X x2)
+{
+	if (x1._begin > x2._begin)
+	{
+		return true;
+	}
+	/*else if (x1._end == x2._end && x1._begin < x2._begin)
+	{
+		return true;
+	}*/
+	else if (x1._begin == x2._begin && x1._id > x2._id)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool cmpYDesc(Y y1, Y y2)
+{
+	return y1._value > y1._value;
+}
+
+
+bool cmpXByWeight(X x1, X x2)
+{
+	if (x1._weight < x2._weight)
+	{
+		return true;
+	}
+	else if (x1._weight == x2._weight && x1._id < x2._id)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
