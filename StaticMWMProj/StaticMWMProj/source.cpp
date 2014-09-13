@@ -1,5 +1,7 @@
 #include<iostream>
 #include<algorithm>
+#include<fstream>
+#include<Windows.h>
 #include"CBG.h"
 #include"auxiliary.h"
 
@@ -11,10 +13,27 @@ vector<X> EEReplaceableSet(CBG g, vector<X> z, X x);
 vector<X> ESReplaceableSet(CBG g, vector<X> z, X x);
 vector<X> ReplaceXinEE(CBG g, X x, vector<X> z, vector<X> x1);
 void ESMWM(CBG g, vector<X>& z, vector<X>& t);
+void generator(char* fileName);
+void readAll(char* fileName, CBG& g);
+
+
 
 int main()
 {
-	cout << "hello" << endl;
+	ofstream out("outputStaticZ.txt");
+	//cout << "hello" << endl;
+	generator("input.txt");
+	CBG g;
+	readAll("input.txt", g);
+	//cout << "Read!" << endl;
+	vector<X> z, t;
+	staticMWM(g, z, t);
+	sort(z.begin(), z.end(), cmpXById);
+	for (int i = 0; i < z.size(); i++)
+	{
+		out << z[i]._id << endl;
+	}
+	out.close();
 	return 0;
 }
 
@@ -34,8 +53,13 @@ void staticMWM(CBG g, vector<X> & z, vector<X> & t)
 		vector<X> zl, zr, tl, tr;
 		staticMWM(gl, zl, tl);
 		staticMWM(gr, zr, tr);
+		sort(tl.begin(), tl.end(), cmpXinESwithEnd);
 		for (int i = 0; i < tl.size(); i++)
 		{
+			if (tl[i]._id == 5 && tl.size() == 4)
+			{
+				int a = 1;
+			}
 			CBG gr1;
 			gr1._allX = zr;
 			gr1._allX.push_back(tl[i]);
@@ -61,14 +85,15 @@ void staticMWM(CBG g, vector<X> & z, vector<X> & t)
 				}
 				if (maxX._end > maxY._value)
 				{
+					zr.push_back(tl[i]);
 					vector<X>::iterator it = find(zr.begin(), zr.end(), maxX);
 					zr.erase(it);
-					zr.push_back(tl[i]);
 					t.push_back(maxX);
 				}
 				else
 				{
 					vector<X> tml;
+					vector<X> allr = rr;
 					for (int k = 0; k < rr.size(); k++)
 					{
 						if (rr[k]._begin < selectedX._begin)
@@ -76,18 +101,19 @@ void staticMWM(CBG g, vector<X> & z, vector<X> & t)
 							tml.push_back(rr[k]);
 						}
 					}
-					sort(tml.begin(), tml.end(), cmpXinEEwithBegin);
-					X x1 = tml[tml.size() - 1];
-					vector<X> rl = EEReplaceableSet(gl, zl, x1);
-					X x2;
-					sort(rl.begin(), rl.end(), cmpXByWeight);
-					x2 = rl[rl.size() - 1];
-					sort(rr.begin(), rr.end(), cmpXByWeight);
-					if (cmpXByWeight(x2, rr[rr.size() - 1]))
+					if (tml.size() != 0)
 					{
-						x2 = rr[rr.size() - 1];
+						sort(tml.begin(), tml.end(), cmpXinEEwithBegin);
+						X x1 = tml[tml.size() - 1];
+						vector<X> rl = EEReplaceableSet(gl, zl, x1);
+						for (int k = 0; k < rl.size(); k++)
+						{
+							allr.push_back(rl[k]);
+						}
 					}
-					if (x2 == selectedX)
+					sort(allr.begin(), allr.end(), cmpXByWeight);
+					X x2 = allr[0];
+					if (x2 == tl[i])
 					{
 						continue;
 					}
@@ -96,21 +122,32 @@ void staticMWM(CBG g, vector<X> & z, vector<X> & t)
 						vector<X>::iterator it = find(rr.begin(), rr.end(), x2);
 						if (it != rr.end())
 						{
+							zr.push_back(tl[i]);
 							it = find(zr.begin(), zr.end(), x2);
 							zr.erase(it);
-							zr.push_back(selectedX);
 						}
 						else
 						{
-							vector<X> bx = ReplaceXinEE(gl, x2, zl, tml);
-							sort(bx.begin(), bx.end(), cmpXinESwithEnd);
-							X x3 = bx[0];
-							it = find(zl.begin(), zl.end(), x2);
-							zl.erase(it);
-							zl.push_back(x3);
-							it = find(zr.begin(), zr.end(), x3);
-							zr.erase(it);
-							zr.push_back(selectedX);
+							vector <X>::iterator it = find(zl.begin(), zl.end(), x2);
+							/*if (it != zl.end())
+							{*/
+								vector<X> bx = ReplaceXinEE(gl, x2, zl, tml);
+								sort(bx.begin(), bx.end(), cmpXinESwithEnd);
+								X x3 = bx[0];
+								zl.push_back(x3);
+								it = find(zl.begin(), zl.end(), x2);
+								zl.erase(it);
+								zr.push_back(tl[i]);
+								it = find(zr.begin(), zr.end(), x3);
+								zr.erase(it);
+							/*}
+							else
+							{
+								zr.push_back(tl[i]);
+								it = find(zr.begin(), zr.end(), x2);
+								zr.erase(it);
+								
+							}*/
 						}
 					}
 				}
@@ -232,7 +269,7 @@ vector<X> ReplaceXinEE(CBG g, X x, vector<X> z, vector<X> x1)
 		vector<X> selectedX;
 		for (int i = 0; i < x1.size(); i++)
 		{
-			if (x1[i]._begin > yValue)
+			if (x1[i]._begin < yValue)
 			{
 				selectedX.push_back(x1[i]);
 			}
@@ -257,6 +294,7 @@ void ESMWM(CBG g, vector<X>& z, vector<X>& t)
 		}
 		else
 		{
+			tempg._allX.erase(tempg._allX.end() - 1);
 			vector<X> r = ESReplaceableSet(tempg, z, g._allX[i]);
 			r.push_back(g._allX[i]);
 			sort(r.begin(), r.end(), cmpXinESwithEnd);
@@ -271,21 +309,168 @@ void ESMWM(CBG g, vector<X>& z, vector<X>& t)
 			}
 			if (maxX > maxY)
 			{
+				z.push_back(g._allX[i]);
 				vector<X>::iterator it = find(z.begin(), z.end(), r[r.size() - 1]);
 				z.erase(it);
-				z.push_back(g._allX[i]);
 				t.push_back(r[r.size() - 1]);
 			}
 			else
 			{
-				sort(r.begin(), r.end(), cmpXByWeight);
-				vector<X>::iterator it = find(z.begin(), z.end(), r[r.size() - 1]);
-				z.erase(it);
 				z.push_back(g._allX[i]);
+				sort(r.begin(), r.end(), cmpXByWeight);
+				vector<X>::iterator it = find(z.begin(), z.end(), r[0]);
+				z.erase(it);
+				
 			}
 		}
 	}
 }
 
+void readAll(char* fileName, CBG& g)
+{
+	ifstream inf(fileName);
+	int ynum;
+	inf >> ynum;
+	for (int i = 0; i < ynum; i++)
+	{
+		int temp;
+		inf >> temp;
+		Y y;
+		y._value = temp;
+		g._allY.push_back(y);
+	}
 
+	char command;
+	while (!inf.eof())
+	{
+		inf >> command;
+		if (command == '#')
+		{
+			char s[20];
+			inf.get(s, 20, '\n');
+			continue;
+		}
+		if (command == '$')
+		{
+			break;
+		}
+
+		switch (command)
+		{
+			//insert an X
+		case '1':
+		{
+			X x;
+			inf >> x._id >> x._begin >> x._end >> x._weight;
+			g._allX.push_back(x);
+		}break;
+
+
+		case '2':
+		{
+
+		}break;
+		case '3':
+		{
+
+		}break;
+		case '4':
+		{
+
+		}break;
+		case '5':
+		{
+
+		}break;
+		case '6':
+		{
+
+		}break;
+		case '7':
+		{
+
+		}break;
+		case '8':
+		{
+		}break;
+		}
+
+	}
+}
+
+void generator(char* fileName)
+{
+	/*cout << "input range of Y" << endl;
+	int range;
+	cin >> range;
+	int xnum;
+	cout << "input the number of X" << endl;
+	cin >> xnum;
+	int maxw;
+	cout << "input the max weight" << endl;
+	cin >> maxw;*/
+
+	int range = 80;
+	int xnum = 300;
+	int maxw = 500;
+
+	ofstream of(fileName);
+
+	of << range << endl;
+
+	for (int i = 1; i <= range; i++)
+	{
+		of << i << " ";
+	}
+	//of << endl;
+
+
+	vector<int> begin;
+	vector<int> end;
+	vector<int> weight;
+
+	/*int seed;
+	cout << "input seed of rand" << endl;
+	cin >> seed;
+	srand(seed);*/
+
+	SYSTEMTIME lpsystime;
+	GetLocalTime(&lpsystime);
+	srand(lpsystime.wMinute*1000 + lpsystime.wMilliseconds);
+
+	for (int i = 1; i <= xnum; i++)
+	{
+		int b = rand() % range + 1;
+		int rest = range - b;
+		int e;
+		if (rest == 0)
+			e = b;
+		else
+		{
+			int diff = rand() % rest;
+			e = b + diff;
+		}
+		begin.push_back(b);
+		end.push_back(e);
+		int w = rand() % maxw + 1;
+		weight.push_back(w);
+	}
+
+
+	for (int i = 1; i <= xnum; i++)
+	{
+		of << endl;
+		of << 1 << " ";
+		of << i << " ";
+		//of << 1 << " ";
+		of << begin[i - 1] << " ";
+		of << end[i - 1] << " ";
+		of << weight[i - 1] << " ";
+	}
+	of << endl;
+	of << '$' << endl;
+
+
+	of.close();
+}
 

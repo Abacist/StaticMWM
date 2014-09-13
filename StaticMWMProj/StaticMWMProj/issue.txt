@@ -1,0 +1,7 @@
+All Y is 2 3 4
+2 matches 5 2 2 4
+3 matches 4 3 3 9
+4 matches 10 3 4 7
+division: 2|3 4
+tl: 3 2 4 10 and 8 2 3 10
+the order determines the output

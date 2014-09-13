@@ -9,3 +9,4 @@ bool cmpYInc(Y y1, Y y2);
 bool cmpXinEEwithBegin(X x1, X x2);
 bool cmpYDesc(Y y1, Y y2);
 bool cmpXByWeight(X x1, X x2);
+bool cmpXById(X x1, X x2);

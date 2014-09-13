@@ -95,7 +95,7 @@ bool cmpXinEEwithBegin(X x1, X x2)
 
 bool cmpYDesc(Y y1, Y y2)
 {
-	return y1._value > y1._value;
+	return y1._value > y2._value;
 }
 
 
@@ -114,4 +114,7 @@ bool cmpXByWeight(X x1, X x2)
 		return false;
 	}
 }
-
+bool cmpXById(X x1, X x2)
+{
+	return x1._id < x2._id;
+}
