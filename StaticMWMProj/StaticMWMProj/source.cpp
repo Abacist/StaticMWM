@@ -56,10 +56,6 @@ void staticMWM(CBG g, vector<X> & z, vector<X> & t)
 		sort(tl.begin(), tl.end(), cmpXinESwithEnd);
 		for (int i = 0; i < tl.size(); i++)
 		{
-			if (tl[i]._id == 5 && tl.size() == 4)
-			{
-				int a = 1;
-			}
 			CBG gr1;
 			gr1._allX = zr;
 			gr1._allX.push_back(tl[i]);
@@ -129,8 +125,6 @@ void staticMWM(CBG g, vector<X> & z, vector<X> & t)
 						else
 						{
 							vector <X>::iterator it = find(zl.begin(), zl.end(), x2);
-							/*if (it != zl.end())
-							{*/
 								vector<X> bx = ReplaceXinEE(gl, x2, zl, tml);
 								sort(bx.begin(), bx.end(), cmpXinESwithEnd);
 								X x3 = bx[0];
@@ -140,14 +134,6 @@ void staticMWM(CBG g, vector<X> & z, vector<X> & t)
 								zr.push_back(tl[i]);
 								it = find(zr.begin(), zr.end(), x3);
 								zr.erase(it);
-							/*}
-							else
-							{
-								zr.push_back(tl[i]);
-								it = find(zr.begin(), zr.end(), x2);
-								zr.erase(it);
-								
-							}*/
 						}
 					}
 				}
